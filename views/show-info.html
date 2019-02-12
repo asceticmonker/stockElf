@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block main %}
+<div>
+  <table>
+      <tr>
+        <td>名字：</td>
+        <td>{{stockName}}</td>
+      </tr>
+      <tr>
+        <td>代码：</td>
+        <td>{{stockNum}}</td>
+      </tr>
+      <tr>
+        <td>时间：</td>
+        <td>{{stockTime}}</td>
+      </tr>
+      <tr>
+        <td>所属板块：</td>
+        <td>{{stockfield}}</td>
+      </tr>
+      <tr>
+        <td>ZT主要原因</td>
+        <td>{{ZTreason}}</td>
+      </tr>
+      <tr>
+        <td>是否ZT：</td>
+        <td>
+          {{isZT}}
+        </td>
+      </tr>
+      <tr>
+        <td>涨幅</td>
+        <td>{{Zrange}}</td>
+      </tr>
+      <tr>
+        
+      </tr>
+      <tr></tr>
+      <tr></tr>
+    </table>
+</div>
+{% endblock %}
