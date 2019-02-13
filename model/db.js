@@ -97,6 +97,17 @@ exports.updateMany = function(collectionName, json1, json2, callback) {
       });
   });
 };
+exports.updateOne = function(collectionName, json1, json2, callback) {
+  _connectDB(function(err, db, db2) {
+    db2.collection(collectionName).updateOne(
+      json1,
+      json2,
+      function(err, results) {
+        callback(err, results);
+        db.close();
+      });
+  });
+};
 
 exports.getAllCount = function(collectionName, callback) {
   _connectDB(function(err, db, db2) {

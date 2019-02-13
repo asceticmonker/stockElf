@@ -26,10 +26,56 @@ module.exports = {
         }
       })
     })
+    let json2 = {
+      'time': stockInfo['stockTime']
+    }
+    let promise2 = new Promise((resolve, reject) => {
+      db.find('dayZt', json2, function(err, info) {
+        console.log(909088)
+        console.log(info)
+        if (!err) {
+          if (!info || info.length === 0) {
+            let obj = {
+              time: stockInfo['stockTime'],
+              ztArr: [stockInfo['stockNum']]
+            }
+            db.insertOne('dayZt', obj, function(err2, info2) {
+              if (!err2) {
+                resolve(info2)
+              } else {
+                reject(err2)
+              }
+            })
+          } else {
+            info = info[0].ztArr;
+            if (info.indexOf(stockInfo['stockNum']) === -1) {
+              info.push(stockInfo['stockNum'])
+            }
+            let setjson = {
+              $set: {
+                "ztArr": info
+              }
+            };
+            db.updateOne('dayZt', json2, setjson, function(err2, info2) {
+              console.log(1234567)
+              console.log(err2)
+              console.log(info2)
+              if (!err2) {
+                resolve(info2)
+              } else {
+                reject(err2)
+              }
+            })
+          }
+
+        } else {
+          reject(err)
+        }
+      })
+    })
     let result = await promise;
-    console.log(result)
+    await promise2;
     promise.then(() => {
-      console.log(123123)
       ctx.render('simple-info.html', {
         info: '提交成功',
         url: '/collect'
