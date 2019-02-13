@@ -17,20 +17,28 @@ module.exports = {
       stockInfo[pattern] = ctx.request.body[pattern] || '';
     }
     stockInfo['_id'] = ctx.request.body['stockNum'] || '';
-
-    // 返回提交的数据 方便查看
-    // ctx.render('show-info.html', stockInfo);
-    db.insertOne('stockZt', stockInfo, function(err, info) {
-      console.log(123)
-      console.log(err)
-      if (!err) {
-        console.log(ctx)
-        ctx.render('show-info.html', stockInfo);
-        // ctx.render('simple-info.html', {
-        //   info: '提交成功',
-        //   url: '/collect'
-        // });
-      }
+    let promise = new Promise((resolve, reject) => {
+      db.insertOne('stockZt', stockInfo, function(err, info) {
+        if (!err) {
+          resolve(info)
+        } else {
+          reject(err)
+        }
+      })
+    })
+    let result = await promise;
+    console.log(result)
+    promise.then(() => {
+      console.log(123123)
+      ctx.render('simple-info.html', {
+        info: '提交成功',
+        url: '/collect'
+      });
+    }, () => {
+      ctx.render('simple-info.html', {
+        info: '提交失败',
+        url: '/collect'
+      });
     })
 
   }

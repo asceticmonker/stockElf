@@ -27,7 +27,6 @@ function templating(path, opts) {
   return async (ctx, next) => {
     ctx.render = function(view, model) {
       ctx.response.body = env.render(view, Object.assign({}, ctx.state || {}, model || {}));
-      console.log(444)
       ctx.response.type = 'text/html';
     };
     await next();
