@@ -27,6 +27,14 @@ module.exports = {
     ztItem['Zrange'] = ctx.request.body['Zrange'] || 'zt';
     ztItem['Ztreason'] = ctx.request.body['ZTreason'] || '';
     stockInfo['ztInfo'] = [ztItem];
+    if (stockInfo['_id'] === '') {
+      ctx.render('simple-info.html', {
+        info: '提交失败',
+        info2: "信息为空",
+        url: '/collect'
+      });
+      return;
+    }
     // let promise = new Promise((resolve, reject) => {
     //   let json2 = {
     //     "_id": stockInfo['_id']

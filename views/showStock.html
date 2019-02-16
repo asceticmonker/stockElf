@@ -1,0 +1,17 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+  {% if variable %}
+  <div>{{err}}</div>
+  {% endif %}
+    <table>
+      {% for item in items %}
+        <tr>
+          <td>{{item.stockNum}}</td>
+          <td>{{item.stockName}}</td>
+          <td>{{item.stockfield}}</td>
+        </tr>
+      {% endfor %}
+      
+    </table>
+</div>
+{% endblock %}
