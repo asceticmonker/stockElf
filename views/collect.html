@@ -3,16 +3,16 @@
   <form action="/uploadStock" method="post">
     <table>
       <tr>
-        <td>名字</td>
-        <td><input type="text" name="stockName"></td>
+        <td>代码</td>
+        <td><input type="text" name="stockNum" id="stockNum_input"></td>
       </tr>
       <tr>
-        <td>代码</td>
-        <td><input type="text" name="stockNum"></td>
+        <td>名字</td>
+        <td><input type="text" name="stockName" id="stockName"></td>
       </tr>
       <tr>
         <td>时间</td>
-        <td><input type="date" name="stockTime"></td>
+        <td><input type="date" name="stockTime" value="{{date}}"></td>
       </tr>
       <tr>
         <td>所属板块</td>
@@ -44,4 +44,5 @@
     </table>
   </form>
 </div>
+<script type="text/javascript" src="/static/js/collect.js"></script>
 {% endblock %}

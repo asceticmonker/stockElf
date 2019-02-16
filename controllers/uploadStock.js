@@ -1,91 +1,98 @@
 const db = require('../model/db')
+// const stock = require('../model/stock')
 let stockInfo = {
   '_id': '',
   'stockName': '',
   'stockNum': '',
-  'stockTime': '',
-  'stockfield': '',
-  'ZTreason': '',
-  'isZT': '',
-  'Zrange': ''
+  'stockfield': [],
+  'ztInfo': [],
+  'lastEditTime': ''
+}
+let ztItem = {
+  'zttime': '',
+  'Zrange': '',
+  'Ztreason': ''
 }
 module.exports = {
   'POST /uploadStock': async (ctx, next) => {
-    var email = ctx.request.body.email || '',
-      password = ctx.request.body.password || '';
     for (let pattern in stockInfo) {
       stockInfo[pattern] = ctx.request.body[pattern] || '';
     }
+    // console.log(ctx.request.body['stockfield'])
     stockInfo['_id'] = ctx.request.body['stockNum'] || '';
+    stockInfo['stockName'] = ctx.request.body['stockName'] || '';
+    stockInfo['stockNum'] = ctx.request.body['stockNum'] || '';
+    stockInfo['lastEditTime'] = ctx.request.body['stockTime'] || '';
+    ztItem['zttime'] = ctx.request.body['stockTime'] || '';
+    ztItem['Zrange'] = ctx.request.body['Zrange'] || 'zt';
+    ztItem['Ztreason'] = ctx.request.body['ZTreason'] || '';
+    stockInfo['ztInfo'] = [ztItem];
+    // let promise = new Promise((resolve, reject) => {
+    //   let json2 = {
+    //     "_id": stockInfo['_id']
+    //   }
+    //   db.find('stockZt', json2, function(err, info) {
+    //     if (!err) {
+    //       if (!info || info.length === 0) {
+    //         db.insertOne('stockZt', stockInfo, function(err2, info2) {
+    //           if (!err2) {
+    //             resolve(info2)
+    //           } else {
+    //             reject(err2)
+    //           }
+    //         })
+    //       } else {
+    //         console.log(123)
+    //         info = info[0].ztInfo;
+    //         info.push(ztItem);
+    //         console.log(info)
+    //         let setjson = {
+    //           $set: {
+    //             "ztInfo": info
+    //           }
+    //         };
+
+    //         db.updateOne('stockZt', json2, setjson, function(err2, info2) {
+    //           if (!err2) {
+    //             resolve(info2)
+    //           } else {
+    //             reject(err2)
+    //           }
+    //         })
+    //       }
+    //     } else {
+    //       reject(err)
+    //     }
+    //   })
+    // })
     let promise = new Promise((resolve, reject) => {
       db.insertOne('stockZt', stockInfo, function(err, info) {
         if (!err) {
           resolve(info)
         } else {
+          console.log(111)
           reject(err)
         }
       })
-    })
-    let json2 = {
-      'time': stockInfo['stockTime']
-    }
-    let promise2 = new Promise((resolve, reject) => {
-      db.find('dayZt', json2, function(err, info) {
-        console.log(909088)
-        console.log(info)
-        if (!err) {
-          if (!info || info.length === 0) {
-            let obj = {
-              time: stockInfo['stockTime'],
-              ztArr: [stockInfo['stockNum']]
-            }
-            db.insertOne('dayZt', obj, function(err2, info2) {
-              if (!err2) {
-                resolve(info2)
-              } else {
-                reject(err2)
-              }
-            })
-          } else {
-            info = info[0].ztArr;
-            if (info.indexOf(stockInfo['stockNum']) === -1) {
-              info.push(stockInfo['stockNum'])
-            }
-            let setjson = {
-              $set: {
-                "ztArr": info
-              }
-            };
-            db.updateOne('dayZt', json2, setjson, function(err2, info2) {
-              console.log(1234567)
-              console.log(err2)
-              console.log(info2)
-              if (!err2) {
-                resolve(info2)
-              } else {
-                reject(err2)
-              }
-            })
-          }
-
-        } else {
-          reject(err)
-        }
-      })
-    })
-    let result = await promise;
-    await promise2;
-    promise.then(() => {
+    }).then((info2) => {
       ctx.render('simple-info.html', {
         info: '提交成功',
+        info2: info2,
         url: '/collect'
       });
-    }, () => {
+    }, (err) => {
       ctx.render('simple-info.html', {
         info: '提交失败',
+        info2: err,
         url: '/collect'
       });
-    })
+    }).catch(
+      () => {
+        console.log(987)
+      }
+    )
+    await promise;
+
 
   }
 };
