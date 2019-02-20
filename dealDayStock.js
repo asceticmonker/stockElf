@@ -20,11 +20,11 @@ async function everyDayStocks(info) {
   })
 }
 
-async function updateStockInfo(item) {
+async function updateStockInfo(item, infosize, i) {
   let json2 = {
     '_id': item["_id"]
   }
-  console.log('updateStockInfo----' + item['_id'] + '-----')
+  console.log('updateStockInfo----' + item['_id'] + '-----' + infosize + '-----' + i)
   return new Promise((resolve, reject) => {
     db.find('stockInfo', json2, async function(err, info) {
       if (!err) {
@@ -43,7 +43,7 @@ async function updateStockInfo(item) {
         } else {
           let setjson = {
             $set: {
-              "ztInfo": item.ztInfo
+              "ztInfo": info[0].ztInfo.concat(item.ztInfo)
             }
           };
           let update = await new Promise((resolve, reject) => {
@@ -88,8 +88,9 @@ let promise = new Promise((resolve, reject) => {
         console.log(9090)
         let eds = await everyDayStocks(info)
         console.log(eds)
-        for (let i = 0; i < info.length; i++) {
-          let rs = await updateStockInfo(info[i])
+        let infosize = info.length;
+        for (let i = 0; i < infosize; i++) {
+          let rs = await updateStockInfo(info[i], infosize, i)
           console.log(rs)
         }
         console.log('finished')
