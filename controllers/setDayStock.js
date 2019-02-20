@@ -1,9 +1,10 @@
+const db = require('../model/db')
 module.exports = {
   'GET /setDayStock': async (ctx, next) => {
     async function everyDayStocks(info) {
       console.log(555)
       let arr = []
-      for (let i=0; i<info.length; i++) {
+      for (let i = 0; i < info.length; i++) {
         arr.push(info[i]._id);
       }
       let obj = {}
@@ -31,12 +32,13 @@ module.exports = {
           if (!info || info.length === 0) {
             resolve([])
           } else {
-            
+            console.log(9090)
             everyDayStocks(info)
             resolve(info)
             // await 
           }
         } else {
+          console.log(6677)
           reject(err)
         }
       })
