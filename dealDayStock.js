@@ -43,8 +43,7 @@ async function updateStockInfo(item) {
         } else {
           let setjson = {
             $set: {
-              "ztInfo": item.ztInfo,
-              "lastEditTime": item.lastEditTime
+              "ztInfo": item.ztInfo
             }
           };
           let update = await new Promise((resolve, reject) => {
