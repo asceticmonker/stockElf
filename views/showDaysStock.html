@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block main %}
+<div class="container">
+  {% if variable %}
+  <div>{{err}}</div>
+  {% endif %}
+    <table>
+      <tr>
+        {% for item in items %}
+          <tr>
+            <td>{{item._id}}</td>
+          </tr>
+        {% endfor %}
+      </tr>
+      {% for item in items %}
+        <tr>
+          <td>{{item.stockNum}}</td>
+        </tr>
+      {% endfor %}
+      
+    </table>
+</div>
+{% endblock %}
