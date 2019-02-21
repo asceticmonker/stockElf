@@ -3,20 +3,28 @@
   {% if variable %}
   <div>{{err}}</div>
   {% endif %}
-    <table>
+  <div class="stock-table">
+    <table class="table-bordered">
       <tr>
-        {% for item in items %}
-          <tr>
-            <td>{{item._id}}</td>
-          </tr>
+        <td class="text-center"></td>
+        {% for time in timeArr %}
+            <td class="text-center">{{time}}</td>
         {% endfor %}
       </tr>
       {% for item in items %}
         <tr>
-          <td>{{item.stockNum}}</td>
+          <td class="text-center">
+            <span>{{item.id}}</span>
+            <span>{{item.name}}</span>
+          </td>
+
+          {% for st in item.arr%}
+            <td class="text-center {% if st=='1' %} iszting {% endif %}" >{{st}}</td>  
+          {% endfor %}
         </tr>
       {% endfor %}
       
     </table>
+    </div>
 </div>
 {% endblock %}

@@ -1,11 +1,15 @@
 const db = require('../model/db')
-
+const stockDicts = require('../tt')
 
 
 const calStocks = (info) => {
   let obj = {}
   let total = 0;
+  let timeArr = []
+  let stockObj = {}
   for (let i = 0; i < info.length; i++) {
+    timeArr.push(info[i]["_id"])
+    stockObj[info[i]["_id"]] = info[i].info;
     for (let j = 0; j < info[i].info.length; j++) {
       if (!obj[info[i].info[j]]) {
         obj[info[i].info[j]] = true;
@@ -13,7 +17,32 @@ const calStocks = (info) => {
       }
     }
   }
-  return total;
+  timeArr.sort(function(v1, v2) {
+    return (new Date(v1).getTime() - new Date(v2).getTime())
+  })
+  let stocks = Object.keys(obj);
+  let newArr = []
+
+  for (let i = 0; i < stocks.length; i++) {
+    let item = {}
+    item.id = stocks[i];
+    item.arr = []
+    item.zttotal = 0;
+    item.name = stockDicts[stocks[i]];
+    for (let j = 0; j < timeArr.length; j++) {
+      if (stockObj[timeArr[j]].indexOf(stocks[i]) > -1) {
+        item.arr.push("1")
+        item.zttotal ++;
+      } else {
+        item.arr.push("0")
+      }
+    }
+    newArr.push(item)
+  }
+  newArr.sort(function(v1,v2){
+    return v2.zttotal - v1.zttotal
+  })
+  return [stocks, timeArr, newArr];
 }
 
 
@@ -35,14 +64,15 @@ module.exports = {
       })
     }).then((info) => {
       console.log(info)
-      let totals = calStocks(info);
-      ctx.render('showStock.html', {
-        items: info,
-        totals: totals,
+      let arr = calStocks(info);
+      ctx.render('showDaysStock.html', {
+        items: arr[2],
+        stocks: arr[0],
+        timeArr: arr[1],
         err: "查询失败",
       });
     }, (err) => {
-      ctx.render('showStock.html', {
+      ctx.render('showDaysStock.html', {
         info: '查询失败',
         err: "查询失败",
       });
