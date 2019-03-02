@@ -18,7 +18,6 @@ module.exports = {
     for (let pattern in stockInfo) {
       stockInfo[pattern] = ctx.request.body[pattern] || '';
     }
-    // console.log(ctx.request.body['stockfield'])
     stockInfo['_id'] = ctx.request.body['stockNum'] || '';
     stockInfo['stockName'] = ctx.request.body['stockName'] || '';
     stockInfo['stockNum'] = ctx.request.body['stockNum'] || '';
@@ -35,71 +34,30 @@ module.exports = {
       });
       return;
     }
-    // let promise = new Promise((resolve, reject) => {
-    //   let json2 = {
-    //     "_id": stockInfo['_id']
-    //   }
-    //   db.find('stockZt', json2, function(err, info) {
-    //     if (!err) {
-    //       if (!info || info.length === 0) {
-    //         db.insertOne('stockZt', stockInfo, function(err2, info2) {
-    //           if (!err2) {
-    //             resolve(info2)
-    //           } else {
-    //             reject(err2)
-    //           }
-    //         })
-    //       } else {
-    //         console.log(123)
-    //         info = info[0].ztInfo;
-    //         info.push(ztItem);
-    //         console.log(info)
-    //         let setjson = {
-    //           $set: {
-    //             "ztInfo": info
-    //           }
-    //         };
-
-    //         db.updateOne('stockZt', json2, setjson, function(err2, info2) {
-    //           if (!err2) {
-    //             resolve(info2)
-    //           } else {
-    //             reject(err2)
-    //           }
-    //         })
-    //       }
-    //     } else {
-    //       reject(err)
-    //     }
-    //   })
-    // })
-    let promise = new Promise((resolve, reject) => {
-      db.insertOne('stockZt', stockInfo, function(err, info) {
-        if (!err) {
-          resolve(info)
-        } else {
-          console.log(111)
-          reject(err)
-        }
-      })
-    }).then((info2) => {
-      ctx.render('simple-info.html', {
-        info: '提交成功',
-        info2: info2,
-        url: '/collect'
-      });
-    }, (err) => {
+    try {
+      let result = await db.insertOne('stockZt', stockInfo)
+      if (result.result) {
+        ctx.render('simple-info.html', {
+          info: '提交成功',
+          info2: JSON.stringify(result.result),
+          url: '/collect'
+        });
+      } else {
+        if (typeof result === 'object')
+          result = JSON.stringify(result)
+        ctx.render('simple-info.html', {
+          info: '提交失败',
+          info2: result,
+          url: '/collect'
+        });
+      }
+    } catch (e) {
       ctx.render('simple-info.html', {
         info: '提交失败',
-        info2: err,
+        info2: e,
         url: '/collect'
       });
-    }).catch(
-      () => {
-        console.log(987)
-      }
-    )
-    await promise;
+    }
 
 
   }

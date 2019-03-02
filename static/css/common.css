@@ -1,3 +1,16 @@
 td.iszting {
   background-color: red;
 }
+.stock-name span{
+  float: left;
+  height: 27px;
+}
+.stock-sp1 {
+  width: 52px;
+  overflow: hidden;
+}
+.stock-sp2 {
+  width: 84px;
+  margin-left: 5px;
+  text-align: left;
+}

@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block main %}
+<div>
+  <table>
+      <tr>
+        <td>代码：</td>
+        <td>{{stock.stockNum}}</td>
+      </tr>
+      <tr>
+        <td>名字：</td>
+        <td>{{stock.stockName}}</td>
+        <td><input type="text" name=""></td>
+        <td><span>修改</span></td>
+      </tr>
+      <tr>
+        <td>涨停信息：</td>
+        <td>
+            {% for info in stock.ztInfo %}
+            <div>
+              <span>{{info.zttime}}</span>
+              <span>{{info.zRange}}</span>
+              <span>{{info.Ztreason}}</span>
+            </div>
+            {% endfor %}
+       </td>
+      </tr>
+      <tr>
+        <td>所属板块：</td>
+        <td>{{stock.stockfield}}</td>
+        <td><input type="text" name=""></td>
+        <td><span>修改</span></td>
+      </tr>
+      <tr></tr>
+      <tr></tr>
+    </table>
+</div>
+{% endblock %}

@@ -20,15 +20,15 @@ module.exports = {
         }
       })
     }).then((info) => {
-      ctx.body = {
-        state: 1,
-        data: info
-      }
+      ctx.render('getStockInfo.html', {
+        stock: info[0],
+        err: "查询失败",
+      });
     }, (err) => {
-      ctx.body = {
-        state: 'error',
-        info: err
-      };
+      ctx.render('getStockInfo.html', {
+        items: err,
+        err: "查询失败",
+      });
     })
     await promise;
   }

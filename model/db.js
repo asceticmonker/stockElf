@@ -6,30 +6,38 @@ var settings = require("./setting.js");
 function _connectDB(callback) {
   var url = settings.dburl; //从settings文件中，都数据库地址
   //连接数据库
-  MongoClient.connect(url, {
-    useNewUrlParser: true
-  }, function(err, db) {
-    if (err) {
-      callback(err, null);
-      return;
-    }
-    var db2 = db.db(settings.dbname)
-    callback(err, db, db2);
-  });
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, {
+      useNewUrlParser: true
+    }, function(err, db) {
+      if (err) {
+        reject(err, null);
+      } else {
+        var db2 = db.db(settings.dbname)
+        resolve([err, db, db2]);
+      }
+    });
+  })
+
 }
 
 //插入数据
-exports.insertOne = function(collectionName, json, callback) {
-  _connectDB(function(err, db, db2) {
+exports.insertOne = async function(collectionName, json) {
+  let [err, db, db2] = await _connectDB()
+  return new Promise((resolve, reject) => {
     db2.collection(collectionName).insertOne(json, function(err, result) {
-      callback(err, result);
+      if (err) {
+        reject(err)
+      } else {
+        resolve(result)
+      }
       db.close(); //关闭数据库
     })
   })
 };
 
 //查找数据，找到所有数据。args是个对象{"pageamount":10,"page":10}
-exports.find = function(collectionName, json, C, D) {
+exports.find = async function(collectionName, json, C, D) {
   var result = []; //结果数组
   if (arguments.length == 3) {
     //那么参数C就是callback，参数D没有传。
@@ -50,63 +58,47 @@ exports.find = function(collectionName, json, C, D) {
     throw new Error("find函数的参数个数，必须是3个，或者4个。");
     return;
   }
-
-  //连接数据库，连接之后查找所有
-  _connectDB(function(err, db, db2) {
-    var cursor = db2.collection(collectionName).find(json).skip(skipnumber).limit(limit).sort(sort);
-    cursor.each(function(err, doc) {
-      if (err) {
-        callback(err, null);
-        db.close(); //关闭数据库
-        return;
-      }
-      if (doc != null) {
-        result.push(doc); //放入结果数组
-      } else {
-        //遍历结束，没有更多的文档了
-        callback(null, result);
-        db.close(); //关闭数据库
-      }
-    });
+  let [err, db, db2] = await _connectDB()
+  var cursor = db2.collection(collectionName).find(json).skip(skipnumber).limit(limit).sort(sort);
+  cursor.toArray(function(err, doc) {
+    callback(doc);
+    db.close(); //关闭数据库
   });
 };
 
 //删除
-exports.deleteMany = function(collectionName, json, callback) {
-  _connectDB(function(err, db, db2) {
-    //删除
-    db2.collection(collectionName).deleteMany(
-      json,
-      function(err, results) {
-        callback(err, results);
-        db.close(); //关闭数据库
-      }
-    );
-  });
+exports.deleteMany = async function(collectionName, json, callback) {
+  let [err, db, db2] = await _connectDB()
+  //删除
+  db2.collection(collectionName).deleteMany(
+    json,
+    function(err, results) {
+      callback(err, results);
+      db.close(); //关闭数据库
+    }
+  );
 };
 
 //修改
-exports.updateMany = function(collectionName, json1, json2, callback) {
-  _connectDB(function(err, db, db2) {
-    db2.collection(collectionName).updateMany(
-      json1,
-      json2,
-      function(err, results) {
-        callback(err, results);
-        db.close();
-      });
-  });
+exports.updateMany = async function(collectionName, json1, json2, callback) {
+  let [err, db, db2] = await _connectDB()
+  db2.collection(collectionName).updateMany(
+    json1,
+    json2,
+    function(err, results) {
+      callback(err, results);
+      db.close();
+    });
 };
-exports.updateOne = function(collectionName, json1, json2, callback) {
-  _connectDB(function(err, db, db2) {
-    db2.collection(collectionName).updateOne(
-      json1,
-      json2,
-      function(err, results) {
-        callback(err, results);
-        db.close();
-      });
-  });
+exports.updateOne = async function(collectionName, json1, json2, callback) {
+  let [err, db, db2] = await _connectDB()
+  db2.collection(collectionName).updateOne(
+    json1,
+    json2,
+    function(err, results) {
+      callback(err, results);
+      db.close();
+    });
 };
 
 exports.getAllCount = function(collectionName, callback) {

@@ -9,15 +9,8 @@ async function everyDayStocks(info) {
   let obj = {}
   obj["info"] = arr;
   obj['_id'] = info[0]['ztInfo'][0]['zttime'];
-  return new Promise((resolve, reject) => {
-    db.insertOne('everyDayZt', obj, function(err, info) {
-      if (!err) {
-        resolve("everyDayStocks --------end")
-      } else {
-        reject(err)
-      }
-    })
-  })
+  let result = await db.insertOne('everyDayZt', obj)
+  return result;
 }
 
 async function updateStockInfo(item, infosize, i) {
@@ -26,40 +19,31 @@ async function updateStockInfo(item, infosize, i) {
   }
   console.log('updateStockInfo----' + item['_id'] + '-----' + infosize + '-----' + i)
   return new Promise((resolve, reject) => {
-    db.find('stockInfo', json2, async function(err, info) {
-      if (!err) {
-        if (!info || info.length === 0) {
-          let insert = await new Promise((resolve, reject) => {
-            db.insertOne('stockInfo', item, function(err2, info2) {
-              if (!err2) {
-                resolve("updateStockInfo --------end---insert")
-              } else {
-                reject("updateStockInfo   error---insert" + err2)
-              }
-            })
-          })
-          resolve("find and insert" + insert)
+    db.find('stockInfo', json2, async function(info) {
+      if (!info || info.length === 0) {
+        console.log(11223)
+        let result = await db.insertOne('stockInfo', item)
+        resolve("find and insert" + result.result)
 
-        } else {
-          let setjson = {
-            $set: {
-              "ztInfo": info[0].ztInfo.concat(item.ztInfo)
-            }
-          };
-          let update = await new Promise((resolve, reject) => {
-            db.updateOne('stockInfo', json2, setjson, function(err2, info2) {
-              if (!err2) {
-                resolve("updateStockInfo --------end---update")
-              } else {
-                reject("updateStockInfo   error---update" + err2)
-              }
-            })
-          })
-          resolve("find and update" + update)
-        }
       } else {
-        reject("updateStockInfo  find error" + err)
+        console.log(33333)
+        let setjson = {
+          $set: {
+            "ztInfo": info[0].ztInfo.concat(item.ztInfo)
+          }
+        };
+        let update = await new Promise((resolve, reject) => {
+          db.updateOne('stockInfo', json2, setjson, function(err2, info2) {
+            if (!err2) {
+              resolve("updateStockInfo --------end---update")
+            } else {
+              reject("updateStockInfo   error---update" + err2)
+            }
+          })
+        })
+        resolve("find and update" + update)
       }
+
     })
   })
   console.log(usi)
@@ -79,29 +63,23 @@ function removeAllStockZt() {
 }
 
 let promise = new Promise((resolve, reject) => {
-  db.find('stockZt', {}, async function(err, info) {
+  db.find('stockZt', {}, async function(info) {
     console.log(info)
-    if (!err) {
-      if (!info || info.length === 0) {
-        resolve([])
-      } else {
-        console.log(9090)
-        let eds = await everyDayStocks(info)
-        console.log(eds)
-        let infosize = info.length;
-        for (let i = 0; i < infosize; i++) {
-          let rs = await updateStockInfo(info[i], infosize, i)
-          console.log(rs)
-        }
-        console.log('finished')
-        let ras = await removeAllStockZt()
-        console.log(ras + 'remove finished')
-        resolve(info)
-        // await 
-      }
+    if (!info || info.length === 0) {
+      resolve([])
     } else {
-      console.log(6677)
-      reject(err)
+      let eds = everyDayStocks(info)
+      console.log(eds)
+      console.log('nihaonihao')
+      let infosize = info.length;
+      for (let i = 0; i < infosize; i++) {
+        let rs = await updateStockInfo(info[i], infosize, i)
+      }
+      console.log('finished')
+      let ras = await removeAllStockZt()
+      console.log(ras + 'remove finished')
+      resolve(info)
+      // await 
     }
   })
 })

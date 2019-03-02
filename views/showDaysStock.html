@@ -13,9 +13,9 @@
       </tr>
       {% for item in items %}
         <tr>
-          <td class="text-center">
-            <span>{{item.id}}</span>
-            <span>{{item.name}}</span>
+          <td class="text-center stock-name">
+            <span class="stock-sp1">{{item.id}}</span>
+            <span class="stock-sp2">{{item.name}}</span>
           </td>
 
           {% for st in item.arr%}
