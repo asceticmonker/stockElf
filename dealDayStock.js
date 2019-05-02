@@ -18,35 +18,23 @@ async function updateStockInfo(item, infosize, i) {
     '_id': item["_id"]
   }
   console.log('updateStockInfo----' + item['_id'] + '-----' + infosize + '-----' + i)
-  return new Promise((resolve, reject) => {
-    db.find('stockInfo', json2, async function(info) {
-      if (!info || info.length === 0) {
-        console.log(11223)
-        let result = await db.insertOne('stockInfo', item)
-        resolve("find and insert" + result.result)
-
-      } else {
-        console.log(33333)
-        let setjson = {
-          $set: {
-            "ztInfo": info[0].ztInfo.concat(item.ztInfo)
-          }
-        };
-        let update = await new Promise((resolve, reject) => {
-          db.updateOne('stockInfo', json2, setjson, function(err2, info2) {
-            if (!err2) {
-              resolve("updateStockInfo --------end---update")
-            } else {
-              reject("updateStockInfo   error---update" + err2)
-            }
-          })
-        })
-        resolve("find and update" + update)
+  let result = await db.find('stockInfo', json2);
+  if (!result || result.length === 0) {
+    console.log(11223)
+    let result = await db.insertOne('stockInfo', item)
+    console.log("find and insert" + result)
+  } else {
+    console.log(33333)
+    console.log(result)
+    let setjson = {
+      $set: {
+        "ztInfo": result[0].ztInfo.concat(item.ztInfo)
       }
-
-    })
-  })
-  console.log(usi)
+    };
+    let result2 = await db.updateOne('stockInfo', json2, setjson)
+    console.log(result2)
+    console.log("find and update")
+  }
 
 }
 
@@ -62,24 +50,23 @@ function removeAllStockZt() {
   })
 }
 
-let promise = new Promise((resolve, reject) => {
-  db.find('stockZt', {}, async function(info) {
-    console.log(info)
-    if (!info || info.length === 0) {
-      resolve([])
+async function getStockZt() {
+  let result = await db.find('stockZt', {});
+  if (!result || result.length === 0) {
+      console.log(result)
+      console.log("stockZt is null")
     } else {
-      let eds = everyDayStocks(info)
+      let eds = everyDayStocks(result)
       console.log(eds)
       console.log('nihaonihao')
-      let infosize = info.length;
+      let infosize = result.length;
       for (let i = 0; i < infosize; i++) {
-        let rs = await updateStockInfo(info[i], infosize, i)
+        let rs = await updateStockInfo(result[i], infosize, i)
       }
       console.log('finished')
       let ras = await removeAllStockZt()
       console.log(ras + 'remove finished')
-      resolve(info)
       // await 
     }
-  })
-})
+}
+getStockZt()
